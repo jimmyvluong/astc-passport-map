@@ -107,7 +107,9 @@ PROGRAMS = {
         "footer": ("<b>Passport rules:</b> free <b>general admission only</b> — special exhibits, planetariums, "
                    "and giant-screen theaters are not included. Venues within 90 straight-line miles of your home "
                    "museum <b>or</b> residence are excluded. Bring your membership card and photo ID, and call "
-                   "ahead to confirm. Unofficial fan project — data © ASTC."),
+                   "ahead to confirm. Unofficial fan project — data © ASTC. "
+                   '<a href="states/" style="color:inherit">Browse by state</a> · '
+                   '<a href="privacy.html" style="color:inherit">Privacy</a>'),
         "about": ASTC_ABOUT,
         "faq": [
             ("What is the ASTC Travel Passport Program?",
@@ -132,7 +134,9 @@ PROGRAMS = {
         "footer": ("<b>NARM basics:</b> free member admission at 1,500+ institutions. Symbols in the official list "
                    "mark restrictions — 15/50-mile home-museum radius rules and special-event exclusions — shown on "
                    "each venue's card here. Locations are city-level. Call ahead to confirm. Unofficial fan project — "
-                   "data © NARM Association."),
+                   "data © NARM Association. "
+                   '<a href="states/" style="color:inherit">Browse by state</a> · '
+                   '<a href="privacy.html" style="color:inherit">Privacy</a>'),
         "about": NARM_ABOUT,
         "faq": [
             ("What is NARM reciprocal membership?",
@@ -144,6 +148,233 @@ PROGRAMS = {
         ],
     },
 }
+
+
+STATE_NAMES = {
+    'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California',
+    'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'Washington, D.C.',
+    'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois',
+    'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana',
+    'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan',
+    'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana',
+    'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey',
+    'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota',
+    'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania',
+    'PR': 'Puerto Rico', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota',
+    'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia',
+    'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming',
+}
+
+CONTENT_CSS = """
+:root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;
+--hair:#e1e0d9;--blue:#2a78d6;--chipbg:#f1f0ec}
+@media (prefers-color-scheme: dark){:root{--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;
+--ink2:#c3c2b7;--muted:#898781;--hair:#2c2c2a;--blue:#3987e5;--chipbg:#242423}}
+:root[data-theme="light"]{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;
+--muted:#898781;--hair:#e1e0d9;--blue:#2a78d6;--chipbg:#f1f0ec}
+:root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;
+--muted:#898781;--hair:#2c2c2a;--blue:#3987e5;--chipbg:#242423}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);
+font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:24px;letter-spacing:-.01em;line-height:1.25;text-wrap:balance;margin:10px 0 6px}
+h2{font-size:17px;margin:30px 0 8px}
+p,li{color:var(--ink2);max-width:68ch}
+a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
+.crumb{font-size:12.5px;color:var(--muted)}
+.mapbtns{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 4px}
+.mapbtns a{font-size:13px;padding:7px 14px;border-radius:999px;background:var(--chipbg);
+border:1px solid var(--hair)}
+ul.venues{list-style:none;padding:0;margin:8px 0}
+ul.venues li{padding:9px 0;border-bottom:1px solid var(--hair);color:var(--ink2);font-size:13.5px}
+ul.venues b{color:var(--ink);font-weight:600;font-size:14.5px;display:block}
+.tag{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chipbg);
+color:var(--ink2);white-space:nowrap;margin-left:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;
+list-style:none;padding:0}
+.grid a{display:flex;justify-content:space-between;gap:8px;padding:9px 12px;
+border:1px solid var(--hair);border-radius:8px;background:var(--surface);color:var(--ink)}
+.grid .n{color:var(--muted);font-variant-numeric:tabular-nums}
+footer{border-top:1px solid var(--hair);margin-top:44px;padding-top:14px;
+font-size:12px;color:var(--muted)}
+"""
+
+
+def page_shell(title, desc, canonical, body):
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<meta name="description" content="{desc}">
+<link rel="canonical" href="{canonical}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#128301;</text></svg>">
+<style>{CONTENT_CSS}</style>
+</head>
+<body>
+<main>
+{body}
+<footer>Unofficial fan project — participant data © ASTC and NARM Association.
+Always call the venue to confirm reciprocal benefits.
+· <a href="../index.html">ASTC map</a> · <a href="../narm.html">NARM map</a>
+· <a href="../privacy.html">Privacy</a></footer>
+</main>
+</body>
+</html>
+"""
+
+
+def esc(s):
+    return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
+
+def build_state_pages(astc, narm):
+    out_dir = ROOT / "states"
+    out_dir.mkdir(exist_ok=True)
+    year = "2026"
+
+    def astc_li(p):
+        bits = []
+        if p["url"]:
+            u = p["url"] if p["url"].startswith("http") else "https://" + p["url"]
+            bits.append(f'<a href="{esc(u)}" target="_blank" rel="noopener">Website</a>')
+        if p["phone"]:
+            bits.append(esc(p["phone"]))
+        tail = " · ".join(bits)
+        tag = '<span class="tag">Photo ID required</span>' if p["proofOfResidence"] else ""
+        return (f'<li><b>{esc(p["name"])}{tag}</b>'
+                f'{esc(p["street"])}, {esc(p["city"])} · {tail}</li>')
+
+    def narm_li(p):
+        syms = f' <span class="tag">{esc(p["symbols"])} — see restriction key</span>' if p["symbols"] else ""
+        phone = f' · {esc(p["phone"])}' if p["phone"] else ""
+        return f'<li><b>{esc(p["name"])}{syms}</b>{esc(p["city"])}{phone}</li>'
+
+    narm_key = """<p><small>Restriction key: <b>**</b>/<b>***</b> = no benefit if your home
+museum is within 15 miles · <b>#</b> = 50 miles · <b>*</b> = special exhibits/ticketed
+events may be excluded · <b>^</b> = may restrict reciprocity.</small></p>"""
+
+    # group by US state code; Canada and everything else get their own pages
+    groups = {}
+    for p in astc["participants"]:
+        code = p["state"] if p["state"] in STATE_NAMES and p["region"] not in ("Canada",) else (
+            "canada" if p["region"] == "Canada" else "international")
+        groups.setdefault(code, {"astc": [], "narm": []})["astc"].append(p)
+    for p in narm["participants"]:
+        code = p["state"] if p["state"] in STATE_NAMES and p["country"] == "United States" else (
+            p["state"] if p["state"] in STATE_NAMES and p["country"] == "Puerto Rico" else
+            "canada" if p["country"] == "Canada" else "international")
+        groups.setdefault(code, {"astc": [], "narm": []})["narm"].append(p)
+
+    def title_for(code):
+        if code == "canada":
+            return "Canada"
+        if code == "international":
+            return "International"
+        return STATE_NAMES[code]
+
+    def slug_for(code):
+        if code in ("canada", "international"):
+            return code
+        return STATE_NAMES[code].lower().replace(",", "").replace(".", "").replace(" ", "-")
+
+    index_items = []
+    pages = []
+    for code, g in sorted(groups.items(), key=lambda kv: title_for(kv[0])):
+        name = title_for(code)
+        slug = slug_for(code)
+        na, nn = len(g["astc"]), len(g["narm"])
+        total = na + nn
+        title = f"Reciprocal Museums in {name} ({year}): ASTC & NARM List and Map"
+        desc = (f"{name} has {na} ASTC Travel Passport science center{'s' if na != 1 else ''} with free "
+                f"reciprocal admission and {nn} NARM member museum{'s' if nn != 1 else ''}. "
+                f"Full {year} list with an interactive map, exclusion-rule checks, and directions.")
+        qa = f"../index.html#q={name.replace(' ', '%20')}" if code in ("canada", "international") \
+            else f"../index.html#q={code}"
+        qn = f"../narm.html#q={name.replace(' ', '%20')}" if code in ("canada", "international") \
+            else f"../narm.html#q={code}"
+        body = [f'<p class="crumb"><a href="./">All states</a> › {esc(name)}</p>',
+                f"<h1>Reciprocal Museums in {esc(name)}</h1>",
+                f"<p>{esc(name)} has <b>{total}</b> museums in the two big reciprocal-admission "
+                f"networks: <b>{na}</b> in the ASTC Travel Passport program (free general admission "
+                f"for science-center members) and <b>{nn}</b> in NARM (free member admission at "
+                f"art, history, and children's museums). Open the interactive maps to set your own "
+                f"home museum — they compute which venues the 90-mile and 15/50-mile exclusion "
+                f"rules remove for you.</p>",
+                '<div class="mapbtns">']
+        if na:
+            body.append(f'<a href="{qa}">Open {esc(name)} on the ASTC map →</a>')
+        if nn:
+            body.append(f'<a href="{qn}">Open {esc(name)} on the NARM map →</a>')
+        body.append('</div>')
+        if na:
+            body.append(f"<h2>ASTC Travel Passport science centers ({na})</h2><ul class='venues'>")
+            body += [astc_li(p) for p in sorted(g["astc"], key=lambda p: p["name"])]
+            body.append("</ul>")
+        if nn:
+            body.append(f"<h2>NARM member museums ({nn})</h2>")
+            body.append(narm_key)
+            body.append("<ul class='venues'>")
+            body += [narm_li(p) for p in sorted(g["narm"], key=lambda p: (p["city"], p["name"]))]
+            body.append("</ul>")
+        (out_dir / f"{slug}.html").write_text(
+            page_shell(title, desc, f"{BASE_URL}/states/{slug}.html", "\n".join(body)),
+            encoding="utf-8")
+        pages.append(f"states/{slug}.html")
+        index_items.append(f'<a href="{slug}.html">{esc(name)}<span class="n">{total}</span></a>')
+
+    idx_body = (
+        '<p class="crumb"><a href="../index.html">ASTC map</a> · <a href="../narm.html">NARM map</a></p>'
+        "<h1>Reciprocal Museums by State</h1>"
+        "<p>Every ASTC Travel Passport science center and NARM member museum, grouped by state. "
+        "Numbers show total reciprocal venues. Each page links into the interactive maps, which "
+        "can compute your personal exclusion zones.</p>"
+        '<ul class="grid">' + "".join(f"<li>{it}</li>" for it in index_items) + "</ul>")
+    (out_dir / "index.html").write_text(
+        page_shell(f"Reciprocal Museums by State ({year}) — ASTC & NARM Lists",
+                   "State-by-state lists of ASTC Travel Passport science centers and NARM "
+                   "reciprocal museums, with interactive maps and exclusion-rule checks.",
+                   f"{BASE_URL}/states/", idx_body),
+        encoding="utf-8")
+    pages.append("states/")
+    print(f"wrote {len(pages) - 1} state pages + states/index.html")
+    return pages
+
+
+def build_privacy():
+    body = """<p class="crumb"><a href="index.html">ASTC map</a> · <a href="narm.html">NARM map</a></p>
+<h1>Privacy</h1>
+<p>This site is a static set of pages with no accounts, no analytics scripts, no ads, and no
+cookies.</p>
+<h2>What is stored</h2>
+<p>Your home museum and location settings are saved in your browser's <b>localStorage</b> so
+the maps remember them between visits. They never leave your device — there is no server to
+send them to. Clearing your browser data removes them. If you use "share" links, your chosen
+home museum and coordinates are encoded in the URL you share.</p>
+<h2>Device location</h2>
+<p>The "Use device location" button asks your browser for your position once, to center the
+map and compute distances. The coordinates stay in your browser subject to the above.</p>
+<h2>Hosting &amp; external links</h2>
+<p>Pages are served by our hosting provider, which may log standard request metadata (IP
+address, user agent) to operate the service. Directions links open Google Maps, and venue
+website links open the venue's own site — each governed by their own privacy policies.</p>
+<h2>Changes</h2>
+<p>If advertising is ever added, this policy and an in-page consent notice will be updated
+first.</p>
+<h2>Contact</h2>
+<p>Questions or corrections: open an issue on
+<a href="https://github.com/jimmyvluong/astc-passport-map/issues" target="_blank"
+rel="noopener">GitHub</a>.</p>"""
+    html = page_shell("Privacy — Reciprocal Museum Maps",
+                      "Privacy policy for the ASTC Travel Passport and NARM reciprocal museum "
+                      "maps: settings stay in your browser; no accounts, analytics, or cookies.",
+                      f"{BASE_URL}/privacy.html", body).replace('href="../', 'href="')
+    (ROOT / "privacy.html").write_text(html, encoding="utf-8")
+    print("wrote privacy.html")
 
 
 def main():
@@ -183,10 +414,14 @@ def main():
         out.write_text(html, encoding="utf-8")
         print(f"wrote {fname} ({out.stat().st_size // 1024} KB, {len(rows)} rows)")
 
+    state_pages = build_state_pages(datasets["astc"][1], datasets["narm"][1])
+    build_privacy()
+
+    all_pages = list(PROGRAMS) + state_pages + ["privacy.html"]
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        + "".join(f" <url><loc>{BASE_URL}/{f}</loc></url>\n" for f in PROGRAMS)
+        + "".join(f" <url><loc>{BASE_URL}/{f}</loc></url>\n" for f in all_pages)
         + "</urlset>\n", encoding="utf-8")
     (ROOT / "robots.txt").write_text(
         f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n", encoding="utf-8")

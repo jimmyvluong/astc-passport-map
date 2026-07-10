@@ -1,0 +1,10 @@
+{
+ "astc": {
+  "url": "https://www.astc.org/wp-content/uploads/2026/04/Standard-List-11pt-Font.pdf",
+  "sha256": "bdd45e964a5b3c114a8bf13d8f4d402b81cd3ece63e18812c6543865090f0296"
+ },
+ "narm": {
+  "url": "https://narmassociation.org/wp-content/uploads/2026/06/NARM_SUMMER_2026.pdf",
+  "sha256": "ef396848d638513f2e7d44de4e5c1c49e8a6cadbc6f6b45907a5b58e32c73db6"
+ }
+}

@@ -281,6 +281,8 @@ function loadState() {
   if (hh) { const i = ROWS.findIndex(r => r[0] === hh); if (i >= 0) home = i; }
   const hl = hp.get('loc');
   if (hl) { const p = hl.split(',').map(Number); if (p.length === 2 && p.every(isFinite)) loc = p; }
+  const hq = hp.get('q');
+  if (hq) { query = hq.trim(); document.getElementById('q').value = query; }
 }
 function saveState() {
   try {
@@ -636,6 +638,10 @@ let sortMode = 'az';
 function computeMatches() {
   matches = new Set();
   if (!query) { for (let i = 0; i < N; i++) matches.add(i); return; }
+  if (/^[A-Z]{2}$/.test(query)) {           // two capital letters = exact state/province code
+    for (let i = 0; i < N; i++) if (ROWS[i][3] === query) matches.add(i);
+    if (matches.size) return;
+  }
   const q = query.toLowerCase();
   for (let i = 0; i < N; i++) {
     const r = ROWS[i];

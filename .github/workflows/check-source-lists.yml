@@ -1,0 +1,42 @@
+name: Check for new ASTC / NARM lists
+
+on:
+  schedule:
+    - cron: "17 14 * * 1"   # Mondays 14:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare source PDFs against recorded hashes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          changed=""
+          for key in astc narm; do
+            url=$(python3 -c "import json;print(json.load(open('data/source-hashes.json'))['$key']['url'])")
+            want=$(python3 -c "import json;print(json.load(open('data/source-hashes.json'))['$key']['sha256'])")
+            if ! curl -fsSL --max-time 120 -A "Mozilla/5.0 (list-freshness-check)" "$url" -o "/tmp/$key.pdf"; then
+              changed="$changed $key(fetch-failed)"
+              continue
+            fi
+            got=$(sha256sum "/tmp/$key.pdf" | cut -d' ' -f1)
+            if [ "$got" != "$want" ]; then
+              changed="$changed $key(content-changed)"
+            fi
+          done
+          if [ -n "$changed" ]; then
+            title="Source list update detected:$changed"
+            if ! gh issue list --state open --search "in:title \"Source list update detected\"" --json number --jq length | grep -qv '^0$'; then
+              gh issue create --title "$title" --body "$(printf 'The weekly freshness check found changes in:%s\n\nRun the pipeline:\n```\npython tools/update_data.py <new-astc-pdf-url>\npython tools/update_narm.py <new-narm-pdf-url>\npython tools/build.py\n```\nthen update data/source-hashes.json and commit.' "$changed")"
+            fi
+          else
+            echo "No changes."
+          fi

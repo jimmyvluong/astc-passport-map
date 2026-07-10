@@ -269,7 +269,7 @@ rel="noopener">GitHub</a>.</p>
   </div>
 </div>
 
-<footer><b>Passport rules:</b> free <b>general admission only</b> — special exhibits, planetariums, and giant-screen theaters are not included. Venues within 90 straight-line miles of your home museum <b>or</b> residence are excluded. Bring your membership card and photo ID, and call ahead to confirm. Unofficial fan project — data © ASTC.</footer>
+<footer><b>Passport rules:</b> free <b>general admission only</b> — special exhibits, planetariums, and giant-screen theaters are not included. Venues within 90 straight-line miles of your home museum <b>or</b> residence are excluded. Bring your membership card and photo ID, and call ahead to confirm. Unofficial fan project — data © ASTC. <a href="states/" style="color:inherit">Browse by state</a> · <a href="privacy.html" style="color:inherit">Privacy</a></footer>
 
 <script>
 "use strict";
@@ -309,6 +309,8 @@ function loadState() {
   if (hh) { const i = ROWS.findIndex(r => r[0] === hh); if (i >= 0) home = i; }
   const hl = hp.get('loc');
   if (hl) { const p = hl.split(',').map(Number); if (p.length === 2 && p.every(isFinite)) loc = p; }
+  const hq = hp.get('q');
+  if (hq) { query = hq.trim(); document.getElementById('q').value = query; }
 }
 function saveState() {
   try {
@@ -664,6 +666,10 @@ let sortMode = 'az';
 function computeMatches() {
   matches = new Set();
   if (!query) { for (let i = 0; i < N; i++) matches.add(i); return; }
+  if (/^[A-Z]{2}$/.test(query)) {           // two capital letters = exact state/province code
+    for (let i = 0; i < N; i++) if (ROWS[i][3] === query) matches.add(i);
+    if (matches.size) return;
+  }
   const q = query.toLowerCase();
   for (let i = 0; i < N; i++) {
     const r = ROWS[i];
