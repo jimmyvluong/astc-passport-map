@@ -50,6 +50,27 @@ Working notes for upcoming sessions. Status as of **2026-07-10**.
    update privacy.html, retire "no tracking" claims.
 5. Kids-activities umbrella: playgrounds, libraries, story times, free museum days —
    fold reciprocal maps in as the first vertical.
+6. **AI / natural-language features** (recorded 2026-07-10):
+   - Natural-language search over the maps: "science museums within an hour of
+     Chicago that are free with my membership", "art museums my NARM card works
+     at in Santa Fe" → parse intent, apply the same exclusion-rule engine, show
+     filtered map + list.
+   - Question answering about program rules ("does the 90-mile rule apply to
+     where I'm staying or where I live?") grounded in the About/FAQ content.
+   - **Itinerary builder** — the flagship: "build me an itinerary with
+     toddler-friendly activities for Chicago over a 3-day weekend" → day-by-day
+     plan drawing on the reciprocal datasets (plus, later, the kids-activities
+     data), with distances, clustering by neighborhood/drive time, and free-with-
+     membership flags. Natural bridge to the umbrella project.
+   - Implementation notes: needs a small backend to keep the LLM API key secret —
+     Cloudflare Workers is the natural fit once we're on Cloudflare Pages (Pages
+     Functions live in the same repo/deploy). Ground responses in our JSON
+     datasets (pass candidate venues as context, don't let the model invent
+     museums). Add rate limiting + response caching for cost/abuse control.
+     Start scoped: an "Ask this map" box that only answers from the loaded
+     dataset, then grow into itineraries. Age-appropriateness data (toddler
+     friendliness) isn't in the ASTC/NARM lists — would need venue-type
+     tagging (children's museum vs. art museum) as a first approximation.
 
 ## Maintenance
 
