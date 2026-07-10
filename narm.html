@@ -616,7 +616,7 @@ cv.addEventListener('pointerup', e => {
   if (pinMode) {
     const wx = view.x + (mx - W/2)/view.k, wy = view.y + (my - H/2)/view.k;
     const lng = wx*360 - 180;
-    const lat = Math.atan(Math.sinh(Math.PI*(1 - 4*wy)))*180/Math.PI;
+    const lat = Math.atan(Math.sinh(Math.PI*(1 - 2*wy)))*180/Math.PI;
     loc = [Math.round(lat*1e4)/1e4, Math.round(lng*1e4)/1e4];
     exitPinMode(); afterStateChange();
     return;
