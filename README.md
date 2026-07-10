@@ -21,9 +21,11 @@ Existing options ([astcpassportmap.blogspot.com](https://astcpassportmap.blogspo
 - **Per-venue cards**: address, phone, website, Google Maps directions, proof-of-ID flags,
   NARM restriction badges, straight-line distances.
 - **Shareable setups** — home museum + location live in the URL hash.
-- **No dependencies, no tile servers, no accounts, no tracking** — each map is one
-  self-contained HTML file (canvas-rendered basemap), works offline once loaded,
-  light & dark theme.
+- **Google-Maps-style base layers** — Streets (OpenStreetMap) and Satellite (Esri
+  imagery) with street-level zoom, plus a zero-request Simple vector layer that works
+  offline. All rendered by one hand-rolled canvas engine — no map libraries.
+- **No accounts, no tracking, no build dependencies** — each map is one self-contained
+  HTML file; the only external requests are the optional map tiles.
 - **Reproducible data pipeline** — regenerate everything from the official PDFs in one
   command when new lists publish.
 

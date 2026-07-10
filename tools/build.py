@@ -358,10 +358,14 @@ home museum and coordinates are encoded in the URL you share.</p>
 <h2>Device location</h2>
 <p>The "Use device location" button asks your browser for your position once, to center the
 map and compute distances. The coordinates stay in your browser subject to the above.</p>
-<h2>Hosting &amp; external links</h2>
+<h2>Hosting, map tiles &amp; external links</h2>
 <p>Pages are served by our hosting provider, which may log standard request metadata (IP
-address, user agent) to operate the service. Directions links open Google Maps, and venue
-website links open the venue's own site — each governed by their own privacy policies.</p>
+address, user agent) to operate the service. When the <b>Streets</b> or <b>Satellite</b>
+base-map layer is selected (Streets is the default), map images are fetched from
+OpenStreetMap and Esri tile servers respectively — those services receive your IP address
+and the map areas you view, under their own privacy policies. The <b>Simple</b> layer makes
+no external requests at all. Directions links open Google Maps, and venue website links
+open the venue's own site.</p>
 <h2>Changes</h2>
 <p>If advertising is ever added, this policy and an in-page consent notice will be updated
 first.</p>
