@@ -1,70 +1,74 @@
-# ASTC Travel Passport Map
+# Reciprocal Museum Maps — ASTC Travel Passport + NARM
 
-An interactive, fast, mobile-friendly map of every science center and museum in the
-[ASTC Travel Passport Program](https://www.astc.org/passport/) — the reciprocal-admission
-program that gets members of one participating science center free general admission at
-~350 others worldwide.
+Fast, personalized, mobile-friendly maps of the two big museum reciprocal-admission networks:
 
-**Live site:** https://jimmyvluong.github.io/astc-passport-map/
+- **ASTC Travel Passport** (`index.html`) — 351 science centers & museums with free
+  reciprocal general admission — https://jimmyvluong.github.io/astc-passport-map/
+- **NARM** (`narm.html`) — 1,526 art/history museums, gardens, and children's museums —
+  https://jimmyvluong.github.io/astc-passport-map/narm.html
 
-## Why another ASTC map?
+## Why better than the existing maps?
 
-Existing maps ([astcpassportmap.blogspot.com](https://astcpassportmap.blogspot.com/),
-[astcfanmap.com](https://astcfanmap.com/)) show pins. This project aims further:
+Existing options ([astcpassportmap.blogspot.com](https://astcpassportmap.blogspot.com/),
+[astcfanmap.com](https://astcfanmap.com/)) show pins. This project models the **rules**:
 
-- **Distance-sorted list + search** — plan a trip, don't just browse pins
-- **90-mile exclusion zone drawn on the map** — the Passport rule everyone forgets;
-  venues inside it render as excluded so you don't drive to a museum that won't take your card
-- **Proof-of-residence flags** on every venue that requires photo ID
-- **Per-venue detail card** — address, phone, website, straight-line distances
-- **No dependencies, no tile servers, no tracking** — a single self-contained HTML file
-  (canvas-rendered basemap), works offline once loaded, light & dark theme
-- **Reproducible data pipeline** — regenerate everything from the official ASTC PDF in one command
+- **Set your home museum → see *your* map.** ASTC's 90-mile exclusion circles are drawn
+  around your home museum and your location; excluded venues are crossed out with the
+  reason spelled out. NARM's per-institution 15/50-mile restriction symbols are parsed
+  from the official list and applied the same way.
+- **Set your location** (geolocate or drop a pin) → distance-sorted list, day-trip
+  highlighting (≤120 mi), "My area" view.
+- **Per-venue cards**: address, phone, website, Google Maps directions, proof-of-ID flags,
+  NARM restriction badges, straight-line distances.
+- **Shareable setups** — home museum + location live in the URL hash.
+- **No dependencies, no tile servers, no accounts, no tracking** — each map is one
+  self-contained HTML file (canvas-rendered basemap), works offline once loaded,
+  light & dark theme.
+- **Reproducible data pipeline** — regenerate everything from the official PDFs in one
+  command when new lists publish.
 
 ## Repo layout
 
 ```
-index.html                  built site (committed so GitHub Pages serves it)
-site/template.html          page source; data placeholders injected at build time
-data/participants.json      canonical dataset parsed from the official ASTC list
-data/manual_locations.json  hand-maintained non-US entries (Canada + international)
+index.html                  ASTC map (built; GitHub Pages serves it)
+narm.html                   NARM map (built)
+sitemap.xml, robots.txt     SEO (built)
+site/template.html          shared page source; config/data injected at build time
+data/participants.json      ASTC dataset (parsed from official PDF, street-level geocodes)
+data/narm.json              NARM dataset (parsed from official PDF, city-level geocodes)
+data/manual_locations.json  hand-maintained ASTC non-US entries
 data/basemap.json           quantized world + US-state polygons (public-domain sources)
-tools/update_data.py        official PDF -> participants.json (parse + geocode)
-tools/build.py              data + template -> index.html
+tools/update_data.py        ASTC PDF -> participants.json (parse + Census/GeoNames geocode)
+tools/update_narm.py        NARM PDF -> narm.json (parse + GeoNames city centroids)
+tools/build.py              data + template -> index.html, narm.html, sitemap, robots
 ```
 
-## Updating when ASTC publishes a new list
+## Updating when new lists publish
 
-ASTC refreshes the participant PDF roughly twice a year (the current list covers
-May 1 – Oct 31, 2026). To rebuild:
+ASTC refreshes ~twice a year (current list: May 1 – Oct 31, 2026). NARM refreshes quarterly.
 
 ```sh
 pip install pypdf requests
-python tools/update_data.py <url-or-path-of-new-pdf>
+python tools/update_data.py <astc-pdf-url>
+python tools/update_narm.py <narm-pdf-url> [path-to-geonames-US.txt]
 python tools/build.py
 ```
 
-US addresses are geocoded with the free US Census Bureau batch geocoder; misses fall
-back to GeoNames ZIP centroids (marked `zip-centroid` in the data and "Location
-approximate" in the UI). Canada/international entries live in
-`data/manual_locations.json` — check them by hand against the new PDF.
-
-Home base (day-trip highlight) and exclusion center are constants at the top of
-`tools/build.py`.
+Check the update scripts' console output for parse counts and geocoding misses; add manual
+coordinates for any misses to the tables at the top of the scripts.
 
 ## Roadmap
 
-- [ ] User-settable home base & home museum (URL params / localStorage) instead of build-time constants
-- [ ] Exclusion zone computed from the user's home museum *and* residence (the actual Passport rule)
-- [ ] Per-venue eligible membership levels (in the PDF, not yet parsed)
-- [ ] Driving-time isochrones or at least driving distance
-- [ ] Trip planner: pick a city, list what's in range
-- [ ] Automated check for a new ASTC PDF (GitHub Action)
+- [ ] Per-state landing pages ("ASTC museums in California") for long-tail SEO
+- [ ] Per-venue eligible membership levels (in the ASTC PDF, not yet parsed)
+- [ ] More reciprocal networks: ROAM, Time Travelers, AHS gardens, AZA zoos
+- [ ] Trip planner: pick a city → what's in range, grouped by drive time
+- [ ] Automated new-PDF detection (GitHub Action)
+- [ ] Broader "things to do with kids near you" umbrella project
 
 ## Data & attribution
 
-Participant data © [ASTC](https://www.astc.org/) — this is an unofficial fan project;
-always call the venue to confirm benefits. Passport benefits cover **general admission
-only** and exclude venues within 90 straight-line miles of your home museum or residence.
-Basemap geometry from public-domain Natural Earth derivatives. Geocoding by the
-US Census Bureau and GeoNames (CC-BY).
+Participant data © [ASTC](https://www.astc.org/) and the
+[NARM Association](https://narmassociation.org/) — this is an unofficial fan project; always
+call the venue to confirm benefits. Basemap geometry from public-domain Natural Earth
+derivatives. Geocoding by the US Census Bureau and GeoNames (CC-BY).
