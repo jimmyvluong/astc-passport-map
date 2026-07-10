@@ -33,9 +33,11 @@ admission</b> at the other participating institutions when they travel.</p>
 <h3>How the 90-mile rule works</h3>
 <p>Passport benefits are excluded at venues within <b>90 miles straight-line ("as the crow
 flies")</b> of either (1) the science center where you hold your membership, or (2) your
-residence. Set your home museum and your location above and this map draws both exclusion
-circles and crosses out the venues they remove — so you never drive to a museum that won't
-honor your card.</p>
+residence. Set your home museum and the map draws its exclusion circle and crosses out the
+venues it removes. "Your location" is your trip base — it drives distances and day-trip
+highlights and excludes nothing, unless you tick <b>"I live here"</b>, which applies the
+90-mile residence exclusion around it too. So when you travel, set your location to where
+you're staying and leave the box unchecked.</p>
 <h3>What's included — and what isn't</h3>
 <ul>
 <li>Free <b>general admission only</b>: special exhibits, planetarium shows, and giant-screen

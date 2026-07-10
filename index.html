@@ -75,6 +75,9 @@ header .sub{color:var(--ink2);font-size:12.5px}
 #locmenu button{flex:1;font:inherit;font-size:12px;padding:6px 4px;border:1px solid var(--hair);
   border-radius:7px;background:var(--page);color:var(--ink2);cursor:pointer}
 #locmenu button:hover{color:var(--ink);border-color:var(--muted)}
+#lochomerow{display:flex;gap:7px;align-items:flex-start;font-size:12px;color:var(--ink2);
+  padding:0 2px;cursor:pointer;line-height:1.4}
+#lochomerow input{margin:2px 0 0;accent-color:var(--blue)}
 #pickbanner{display:none;background:color-mix(in srgb, var(--blue) 12%, var(--surface));
   border:1px solid var(--blue);border-radius:8px;padding:8px 10px;font-size:12.5px}
 #pickbanner button{float:right;font:inherit;font-size:12px;border:none;background:none;color:var(--blue);cursor:pointer;padding:0 2px}
@@ -204,6 +207,8 @@ footer b{color:var(--ink2);font-weight:600}
         <button id="droppin">Click map to drop pin</button>
         <button id="clearloc">Clear</button>
       </div>
+      <label id="lochomerow" hidden><input type="checkbox" id="lochome">
+        I live here — apply the 90-mile residence exclusion around this spot</label>
       <div id="pickbanner">Now click your museum in the list below <button id="pickcancel">Cancel</button></div>
     </div>
     <div id="sidehead">
@@ -262,9 +267,11 @@ admission</b> at the other participating institutions when they travel.</p>
 <h3>How the 90-mile rule works</h3>
 <p>Passport benefits are excluded at venues within <b>90 miles straight-line ("as the crow
 flies")</b> of either (1) the science center where you hold your membership, or (2) your
-residence. Set your home museum and your location above and this map draws both exclusion
-circles and crosses out the venues they remove — so you never drive to a museum that won't
-honor your card.</p>
+residence. Set your home museum and the map draws its exclusion circle and crosses out the
+venues it removes. "Your location" is your trip base — it drives distances and day-trip
+highlights and excludes nothing, unless you tick <b>"I live here"</b>, which applies the
+90-mile residence exclusion around it too. So when you travel, set your location to where
+you're staying and leave the box unchecked.</p>
 <h3>What's included — and what isn't</h3>
 <ul>
 <li>Free <b>general admission only</b>: special exhibits, planetarium shows, and giant-screen
@@ -312,19 +319,22 @@ function distMi(lat1, lng1, lat2, lng2) {
 // ---------- personal state ----------
 const LS = 'reciprocal-map:';
 let home = -1;          // row index
-let loc = null;         // [lat, lng]
+let loc = null;         // [lat, lng] — where you are (trip base)
+let locIsHome = false;  // the set location is also your residence -> ASTC 90-mi exclusion
 function loadState() {
   try {
     const h = localStorage.getItem(LS + CFG.program + ':home');
     if (h != null) { const i = ROWS.findIndex(r => r[0] === h); if (i >= 0) home = i; }
     const l = localStorage.getItem(LS + 'loc');
     if (l) loc = JSON.parse(l);
+    locIsHome = localStorage.getItem(LS + 'locIsHome') === '1';
   } catch (e) {}
   const hp = new URLSearchParams(location.hash.slice(1));
   const hh = hp.get('home');
   if (hh) { const i = ROWS.findIndex(r => r[0] === hh); if (i >= 0) home = i; }
   const hl = hp.get('loc');
   if (hl) { const p = hl.split(',').map(Number); if (p.length === 2 && p.every(isFinite)) loc = p; }
+  if (hp.has('lochome')) locIsHome = hp.get('lochome') === '1';
   const hq = hp.get('q');
   if (hq) { query = hq.trim(); document.getElementById('q').value = query; }
 }
@@ -334,10 +344,12 @@ function saveState() {
     else localStorage.removeItem(LS + CFG.program + ':home');
     if (loc) localStorage.setItem(LS + 'loc', JSON.stringify(loc));
     else localStorage.removeItem(LS + 'loc');
+    localStorage.setItem(LS + 'locIsHome', locIsHome ? '1' : '0');
   } catch (e) {}
   const hp = new URLSearchParams();
   if (home >= 0) hp.set('home', ROWS[home][0]);
   if (loc) hp.set('loc', loc[0].toFixed(4) + ',' + loc[1].toFixed(4));
+  if (loc && locIsHome) hp.set('lochome', '1');
   history.replaceState(null, '', hp.toString() ? '#' + hp.toString() : location.pathname);
 }
 
@@ -355,9 +367,9 @@ function exclusion(i) {
       const d = distMi(ROWS[home][8], ROWS[home][9], r[8], r[9]);
       if (d <= 90) return 'Within 90 miles of your home museum (' + Math.round(d) + ' mi straight-line) — the Passport exclusion applies.';
     }
-    if (loc) {
+    if (loc && locIsHome) {
       const d = distMi(loc[0], loc[1], r[8], r[9]);
-      if (d <= 90) return 'Within 90 miles of your set location (' + Math.round(d) + ' mi straight-line) — venues near your residence are excluded.';
+      if (d <= 90) return 'Within 90 miles of your home location (' + Math.round(d) + ' mi straight-line) — venues near your residence are excluded.';
     }
   } else if (home >= 0) {
     const rad = restrictionRadius(r[11]);
@@ -538,7 +550,7 @@ function draw() {
 
   if (CFG.program === 'astc' && view.k > 700) {
     if (home >= 0) strokeCircle(ROWS[home][8], ROWS[home][9], 90, '90 mi — home museum');
-    if (loc) strokeCircle(loc[0], loc[1], 90, home >= 0 ? '90 mi — your location' : '90 mi exclusion');
+    if (loc && locIsHome) strokeCircle(loc[0], loc[1], 90, '90 mi — home location');
   }
 
   if (loc && view.k > 400) {
@@ -834,7 +846,8 @@ document.getElementById('geo').onclick = () => {
   }, () => { enterPinMode(); });
 };
 document.getElementById('droppin').onclick = () => { locMenu.style.display = 'none'; enterPinMode(); };
-document.getElementById('clearloc').onclick = () => { locMenu.style.display = 'none'; loc = null; afterStateChange(); };
+document.getElementById('clearloc').onclick = () => { locMenu.style.display = 'none'; loc = null; locIsHome = false; afterStateChange(); };
+document.getElementById('lochome').onchange = e => { locIsHome = e.target.checked; afterStateChange(); };
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { exitPickMode(); exitPinMode(); document.getElementById('about').style.display = 'none'; }
 });
@@ -843,8 +856,11 @@ function refreshSettingsUI() {
   if (home >= 0) { hv.textContent = ROWS[home][0]; hv.classList.remove('unset'); }
   else { hv.textContent = 'Set — tap, then pick from list'; hv.classList.add('unset'); }
   const lv = document.getElementById('locval');
-  if (loc) { lv.textContent = loc[0].toFixed(2) + ', ' + loc[1].toFixed(2); lv.classList.remove('unset'); }
+  if (loc) { lv.textContent = loc[0].toFixed(2) + ', ' + loc[1].toFixed(2) + (locIsHome ? ' (home)' : ''); lv.classList.remove('unset'); }
   else { lv.textContent = 'Set — for distances & day trips'; lv.classList.add('unset'); }
+  const lhr = document.getElementById('lochomerow');
+  lhr.hidden = !loc || CFG.program !== 'astc';
+  document.getElementById('lochome').checked = locIsHome;
   document.getElementById('myview').hidden = !loc;
   document.getElementById('onboard').hidden = home >= 0 || !!loc;
   if ((loc || home >= 0) && sortMode === 'az' && !query) {
